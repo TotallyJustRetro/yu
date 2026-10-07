@@ -1,0 +1,30 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pillow opencv-python tkinterdnd2 python-vlc
+
+      - name: Build exe
+        run: pyinstaller --noconsole --onefile --name MediaLauncher --collect-all tkinterdnd2 MediaLauncher.pyw
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: MediaLauncher-windows
+          path: dist/MediaLauncher.exe
